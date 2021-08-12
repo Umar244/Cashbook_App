@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'Widgets/Entry.dart';
+import 'AddEntry.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({Key key}) : super(key: key);
 
   _HomePageState createState() => _HomePageState();
 }
@@ -15,7 +16,10 @@ class _HomePageState extends State<HomePage> {
   List<Entry> entryList = [];
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Hisab Kitab')),
+      appBar: AppBar(
+        title: Text('Hisab Kitab'),
+        backgroundColor: Colors.black,
+      ),
       body: Center(
           child: Container(
               padding: EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
@@ -66,11 +70,14 @@ class _HomePageState extends State<HomePage> {
                 TextButton(
                   child: Text('Add new entry'),
                   onPressed: () async {
+                    final result = await Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => EntryForm()));
                     this.setState(() {
                       List<Entry> temp = entryList;
-                      for (int i = 0; i < 12; i++) {
-                        temp.add(Entry(title: 'Entry no $i', amount: 20 * i));
-                      }
+
+                      temp.add(Entry(
+                          title: result['title'], amount: result['Amount']));
+
                       _entries = EntryList(entryList: temp);
                     });
                   },
