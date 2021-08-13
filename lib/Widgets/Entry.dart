@@ -1,28 +1,17 @@
 import 'package:flutter/material.dart';
 
-class Entry extends StatelessWidget {
+class Entry {
   final amount;
   final title;
+  final type;
 
-  Entry({required this.title, required this.amount});
+  Entry({@required this.title, @required this.amount, @required this.type});
 
-  Widget build(BuildContext context) {
-    return Container(
-        child: ListTile(
-      title: Text(title),
-      subtitle: Text('Rs $amount'),
-    ));
-  }
-}
-
-class EntryList extends StatelessWidget {
-  final List<Widget> entryList;
-
-  EntryList({required this.entryList});
-
-  Widget build(BuildContext context) {
-    return ListView(
-      children: entryList,
-    );
+  createRow() {
+    if (type == 'Cash In') {
+      return TableRow(children: [Text(title), Text(amount), Text('')]);
+    } else {
+      return TableRow(children: [Text(title), Text(''), Text(amount)]);
+    }
   }
 }
