@@ -9,84 +9,120 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final cashIn = 500;
-  final cashOut = 200;
+  int cashIn = 0;
+  int cashOut = 0;
 
-  EntryList _entries = EntryList(entryList: []);
-  List<Entry> entryList = [];
+  List<TableRow> _entries = [];
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Hisab Kitab'),
-        backgroundColor: Colors.black,
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Center(
-          child: Container(
-              padding: EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
-              child: Column(children: [
-                Center(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                      Container(
-                          padding: EdgeInsets.all(8.0),
-                          child: Card(
-                              color: Colors.greenAccent,
-                              child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    SizedBox(
-                                        width: 150,
-                                        height: 80,
-                                        child: ListTile(
-                                          subtitle: Text('CASH IN'),
-                                          title:
-                                              Text('Rs ' + cashIn.toString()),
-                                        )),
-                                  ]))),
-                      Container(
-                          padding: EdgeInsets.all(8.0),
-                          child: Card(
-                              color: Colors.redAccent,
-                              child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    SizedBox(
-                                      width: 150,
-                                      height: 80,
-                                      child: ListTile(
-                                        subtitle: Text('CASH OUT'),
-                                        title: Text('Rs $cashOut'),
-                                      ),
-                                    ),
-                                  ])))
-                    ])),
-                Container(
-                    padding: EdgeInsets.only(top: 8.0, bottom: 4.0),
-                    child: Row(children: [
-                      Text('Entries'),
-                    ])),
-                Expanded(child: SizedBox(height: 250, child: _entries)),
-                TextButton(
-                  child: Text('Add new entry'),
-                  onPressed: () async {
-                    final result = await Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => EntryForm()));
-                    this.setState(() {
-                      List<Entry> temp = entryList;
-
-                      temp.add(Entry(
-                          title: result['title'], amount: result['Amount']));
-
-                      _entries = EntryList(entryList: temp);
-                    });
-                  },
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.black),
+          child: Column(children: [
+        Center(
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Card(
+            color: Theme.of(context).accentColor,
+            child: SizedBox(
+                width: 160,
+                height: 80,
+                child: ListTile(
+                  subtitle: Text('Cash In',
+                      style: Theme.of(context)
+                          .textTheme
+                          .subtitle2
+                          .copyWith(color: Colors.green)),
+                  title: Text(
+                    'Rs ' + cashIn.toString(),
+                    style: Theme.of(context)
+                        .textTheme
+                        .subtitle1
+                        .copyWith(color: Colors.green),
+                  ),
+                )),
+          ),
+          Card(
+              color: Theme.of(context).accentColor,
+              child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                SizedBox(
+                  width: 160,
+                  height: 80,
+                  child: ListTile(
+                    subtitle: Text(
+                      'CASH OUT',
+                      style: Theme.of(context)
+                          .textTheme
+                          .subtitle2
+                          .copyWith(color: Colors.red),
+                    ),
+                    title: Text(
+                      'Rs $cashOut',
+                      style: Theme.of(context)
+                          .textTheme
+                          .subtitle1
+                          .copyWith(color: Colors.red),
+                    ),
                   ),
                 ),
-              ]))),
+              ]))
+        ])),
+        Container(
+            alignment: const Alignment(-1, 0),
+            padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
+            child: Table(children: [
+              TableRow(children: [
+                const Text('Title'),
+                const Text('Cash In'),
+                const Text('Cash Out')
+              ])
+            ])),
+        Expanded(
+            child: SizedBox(
+                height: 240,
+                child: SingleChildScrollView(
+                    child: Table(
+                  border:
+                      TableBorder.all(color: Theme.of(context).primaryColor),
+                  children: _entries,
+                )))),
+        TextButton(
+            child: Text('Add new entry'),
+            onPressed: () async {
+              final result = await Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => EntryForm()));
+              if (result != null) {
+                this.setState(() {
+                  //Simulate data loop
+
+                  /*for (int i = 0; i < 20; i++) {
+                    temp.add(Entry(
+                            amount: (i * 2000).toString(),
+                            title: '$i Entry',
+                            type: 'Cash In')
+                        .createRow());
+                  }*/
+                  List<TableRow> temp = _entries;
+
+                  if (result['type'] == 'Cash In') {
+                    cashIn += int.parse(result['Amount']);
+                  } else {
+                    cashOut += int.parse(result['Amount']);
+                  }
+                  temp.add(Entry(
+                          title: result['title'],
+                          amount: result['Amount'],
+                          type: result['type'])
+                      .createRow());
+
+                  _entries = temp;
+                });
+              }
+            },
+            style: Theme.of(context).textButtonTheme.style),
+      ])),
     );
   }
 }

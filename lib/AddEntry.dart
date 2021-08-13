@@ -7,21 +7,16 @@ class EntryForm extends StatefulWidget {
 class _EntryForm extends State<EntryForm> {
   List<DropdownMenuItem> dropDown = [];
   String entryType = 'Cash In';
-  TextEditingController titleController = TextEditingController(text: 'Title');
-  TextEditingController amountController = TextEditingController(text: '0');
-
+  TextEditingController titleController;
+  TextEditingController amountController;
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Add New Entry',
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6
-                  .copyWith(color: Colors.white)),
-          backgroundColor: Colors.black,
+          title: Text('Add Entry'),
+          backgroundColor: Theme.of(context).primaryColor,
         ),
         body: Container(
-            padding: EdgeInsets.only(top: 8.0, left: 2.0),
+            alignment: Alignment(0, 0),
             child: Column(
               children: [
                 Container(
@@ -32,7 +27,7 @@ class _EntryForm extends State<EntryForm> {
                         style: Theme.of(context).textTheme.subtitle1,
                       ),
                       Container(
-                        padding: EdgeInsets.only(),
+                        padding: EdgeInsets.all(0),
                         decoration: new BoxDecoration(
                           shape: BoxShape.rectangle,
                           border: new Border.all(
@@ -114,14 +109,12 @@ class _EntryForm extends State<EntryForm> {
                       print(amountController.text);
                       Navigator.pop(context, {
                         'title': titleController.text,
-                        'Amount': amountController.text
+                        'Amount': amountController.text,
+                        'type': entryType
                       });
                     },
                     child: Text('Submit',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyText2
-                            .copyWith(color: Colors.white)),
+                        style: Theme.of(context).textTheme.bodyText2),
                   ),
                 )
               ],
