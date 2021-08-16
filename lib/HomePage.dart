@@ -12,7 +12,17 @@ class _HomePageState extends State<HomePage> {
   int cashIn = 0;
   int cashOut = 0;
 
-  List<TableRow> _entries = [];
+  List<Entry> _entries = Entry.entries;
+
+  Widget createTile(Entry entry) {
+    return ListTile(
+      leading: GestureDetector(
+        child: Row(
+          children: [Text(entry.title)],
+        ),
+      ),
+    );
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,47 +89,21 @@ class _HomePageState extends State<HomePage> {
                 const Text('Cash Out')
               ])
             ])),
-        Expanded(
-            child: SizedBox(
-                height: 240,
-                child: SingleChildScrollView(
-                    child: Table(
-                  border:
-                      TableBorder.all(color: Theme.of(context).primaryColor),
-                  children: _entries,
-                )))),
+        Flexible(
+            child: ListView.builder(
+                itemCount: Entry.count,
+                shrinkWrap: true,
+                itemBuilder: (context, index) => createTile(_entries[index]))),
         TextButton(
             child: Text('Add new entry'),
             onPressed: () async {
-              final result = await Navigator.push(context,
+              await Navigator.push(context,
                   MaterialPageRoute(builder: (context) => EntryForm()));
-              if (result != null) {
-                this.setState(() {
-                  //Simulate data loop
 
-                  /*for (int i = 0; i < 20; i++) {
-                    temp.add(Entry(
-                            amount: (i * 2000).toString(),
-                            title: '$i Entry',
-                            type: 'Cash In')
-                        .createRow());
-                  }*/
-                  List<TableRow> temp = _entries;
-
-                  if (result['type'] == 'Cash In') {
-                    cashIn += int.parse(result['Amount']);
-                  } else {
-                    cashOut += int.parse(result['Amount']);
-                  }
-                  temp.add(Entry(
-                          title: result['title'],
-                          amount: result['Amount'],
-                          type: result['type'])
-                      .createRow());
-
-                  _entries = temp;
-                });
-              }
+              this.setState(() {
+                _entries = Entry.entries;
+                print(_entries);
+              });
             },
             style: Theme.of(context).textButtonTheme.style),
       ])),

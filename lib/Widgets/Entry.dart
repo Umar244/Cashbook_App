@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 
 class Entry {
-  final amount;
-  final title;
-  final type;
+  final String amount;
+  final String title;
+  final String type;
+  final int id;
+  static int count = 0;
+  static List<Entry> entries = [];
 
-  Entry({@required this.title, @required this.amount, @required this.type});
-
-  createRow() {
-    if (type == 'Cash In') {
-      return TableRow(children: [Text(title), Text(amount), Text('')]);
-    } else {
-      return TableRow(children: [Text(title), Text(''), Text(amount)]);
-    }
+  static addEntry(entry) {
+    entries.add(entry);
+    count++;
   }
+
+  Entry(
+      {@required this.title,
+      @required this.amount,
+      @required this.type,
+      @required this.id});
 }

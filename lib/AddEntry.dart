@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'Widgets/Entry.dart';
 
 class EntryForm extends StatefulWidget {
   _EntryForm createState() => _EntryForm();
@@ -7,8 +8,8 @@ class EntryForm extends StatefulWidget {
 class _EntryForm extends State<EntryForm> {
   List<DropdownMenuItem> dropDown = [];
   String entryType = 'Cash In';
-  TextEditingController titleController;
-  TextEditingController amountController;
+  TextEditingController titleController = TextEditingController();
+  TextEditingController amountController = TextEditingController();
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -107,11 +108,13 @@ class _EntryForm extends State<EntryForm> {
                     onPressed: () {
                       print(titleController.text);
                       print(amountController.text);
-                      Navigator.pop(context, {
-                        'title': titleController.text,
-                        'Amount': amountController.text,
-                        'type': entryType
-                      });
+                      Entry entry = Entry(
+                          title: titleController.text,
+                          amount: amountController.text,
+                          type: entryType,
+                          id: Entry.count);
+                      Entry.addEntry(entry);
+                      Navigator.pop(context);
                     },
                     child: Text('Submit',
                         style: Theme.of(context).textTheme.bodyText2),

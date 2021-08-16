@@ -14,8 +14,8 @@ class MyApp extends StatelessWidget {
             //brightness: Brightness.dark,
             primaryColor: Colors.grey,
             accentColor: Colors.white,
-            errorColor: Colors.redAccent,
-            highlightColor: Colors.greenAccent,
+            errorColor: Colors.red,
+            highlightColor: Colors.green,
             // Define the default font family.
             fontFamily: 'Georgia',
 
