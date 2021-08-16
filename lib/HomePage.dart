@@ -9,18 +9,85 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int cashIn = 0;
-  int cashOut = 0;
+  final Map<String, int> cash = {'Cash In': 0, 'Cash Out': 0};
 
   List<Entry> _entries = Entry.entries;
 
+  deleteEntry(int id) {
+    Entry.entries.remove(_entries[id]);
+    Entry.count--;
+  }
+
+  Widget deleteDialogue(entry) {
+    return AlertDialog(
+        title: Text('delete entry?'),
+        content: Text('Delete item?'),
+        actions: [
+          TextButton(
+              onPressed: () {
+                cash[entry.type] -= int.parse(entry.amount);
+                deleteEntry(entry.id);
+                Navigator.of(context).pop();
+              },
+              child: Text('ok')),
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('No'))
+        ]);
+  }
+
   Widget createTile(Entry entry) {
-    return ListTile(
-      leading: GestureDetector(
-        child: Row(
-          children: [Text(entry.title)],
+    if (entry.type == "Cash In")
+      return ListTile(
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return deleteDialogue(entry);
+              });
+          this.setState(() {
+            _entries = Entry.entries;
+          });
+        },
+        title: Text(
+          entry.title,
+          style: Theme.of(context)
+              .textTheme
+              .subtitle1
+              .copyWith(color: Theme.of(context).highlightColor),
         ),
+        subtitle: Text('Rs ' + entry.amount,
+            style: Theme.of(context)
+                .textTheme
+                .subtitle1
+                .copyWith(color: Theme.of(context).highlightColor)),
+      );
+
+    return ListTile(
+      onTap: () {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return deleteDialogue(entry);
+            });
+        this.setState(() {
+          _entries = Entry.entries;
+        });
+      },
+      title: Text(
+        entry.title,
+        style: Theme.of(context)
+            .textTheme
+            .subtitle1
+            .copyWith(color: Theme.of(context).errorColor),
       ),
+      subtitle: Text('Rs ' + entry.amount,
+          style: Theme.of(context)
+              .textTheme
+              .subtitle1
+              .copyWith(color: Theme.of(context).errorColor)),
     );
   }
 
@@ -46,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                           .subtitle2
                           .copyWith(color: Colors.green)),
                   title: Text(
-                    'Rs ' + cashIn.toString(),
+                    'Rs ' + cash['Cash In'].toString(),
                     style: Theme.of(context)
                         .textTheme
                         .subtitle1
@@ -62,14 +129,14 @@ class _HomePageState extends State<HomePage> {
                   height: 80,
                   child: ListTile(
                     subtitle: Text(
-                      'CASH OUT',
+                      'Cash Out',
                       style: Theme.of(context)
                           .textTheme
                           .subtitle2
                           .copyWith(color: Colors.red),
                     ),
                     title: Text(
-                      'Rs $cashOut',
+                      'Rs ' + cash['Cash Out'].toString(),
                       style: Theme.of(context)
                           .textTheme
                           .subtitle1
@@ -82,18 +149,18 @@ class _HomePageState extends State<HomePage> {
         Container(
             alignment: const Alignment(-1, 0),
             padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
-            child: Table(children: [
-              TableRow(children: [
-                const Text('Title'),
-                const Text('Cash In'),
-                const Text('Cash Out')
-              ])
-            ])),
-        Flexible(
-            child: ListView.builder(
-                itemCount: Entry.count,
-                shrinkWrap: true,
-                itemBuilder: (context, index) => createTile(_entries[index]))),
+            child: Text(
+              'Entries',
+              style: Theme.of(context).textTheme.subtitle1,
+            )),
+        Expanded(
+            child: SizedBox(
+                height: 240,
+                child: ListView.builder(
+                    itemCount: Entry.count,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) =>
+                        createTile(_entries[index])))),
         TextButton(
             child: Text('Add new entry'),
             onPressed: () async {
@@ -102,6 +169,8 @@ class _HomePageState extends State<HomePage> {
 
               this.setState(() {
                 _entries = Entry.entries;
+                cash[_entries[Entry.count - 1].type] +=
+                    int.parse(_entries[Entry.count - 1].amount);
                 print(_entries);
               });
             },
