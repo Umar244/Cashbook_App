@@ -11,22 +11,26 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final Map<String, int> cash = {'Cash In': 0, 'Cash Out': 0};
 
-  List<Entry> _entries = Entry.entries;
+  Map<String, Entry> _entries = Entry.entries;
 
-  deleteEntry(int id) {
-    Entry.entries.remove(_entries[id]);
+  List<String> _entryIds = [];
+
+  deleteEntry(String id) {
+    Entry.entries.remove(id);
+    _entryIds.remove(id);
     Entry.count--;
   }
 
-  Widget deleteDialogue(entry) {
+  Widget deleteDialogue(id) {
     return AlertDialog(
         title: Text('delete entry?'),
         content: Text('Delete item?'),
         actions: [
           TextButton(
-              onPressed: () {
-                cash[entry.type] -= int.parse(entry.amount);
-                deleteEntry(entry.id);
+              onPressed: () async {
+                cash[_entries[id].type] -= int.parse(_entries[id].amount);
+                print(_entries[id].type);
+                await deleteEntry(id);
                 Navigator.of(context).pop();
               },
               child: Text('ok')),
@@ -38,27 +42,27 @@ class _HomePageState extends State<HomePage> {
         ]);
   }
 
-  Widget createTile(Entry entry) {
-    if (entry.type == "Cash In")
+  Widget createTile(String id) {
+    if (_entries[id].type == "Cash In")
       return ListTile(
-        onTap: () {
-          showDialog(
+        onTap: () async {
+          await showDialog(
               context: context,
               builder: (BuildContext context) {
-                return deleteDialogue(entry);
+                return deleteDialogue(id);
               });
           this.setState(() {
             _entries = Entry.entries;
           });
         },
         title: Text(
-          entry.title,
+          _entries[id].title,
           style: Theme.of(context)
               .textTheme
               .subtitle1
               .copyWith(color: Theme.of(context).highlightColor),
         ),
-        subtitle: Text('Rs ' + entry.amount,
+        subtitle: Text('Rs ' + _entries[id].amount,
             style: Theme.of(context)
                 .textTheme
                 .subtitle1
@@ -66,24 +70,24 @@ class _HomePageState extends State<HomePage> {
       );
 
     return ListTile(
-      onTap: () {
-        showDialog(
+      onTap: () async {
+        await showDialog(
             context: context,
             builder: (BuildContext context) {
-              return deleteDialogue(entry);
+              return deleteDialogue(id);
             });
         this.setState(() {
           _entries = Entry.entries;
         });
       },
       title: Text(
-        entry.title,
+        _entries[id].title,
         style: Theme.of(context)
             .textTheme
             .subtitle1
             .copyWith(color: Theme.of(context).errorColor),
       ),
-      subtitle: Text('Rs ' + entry.amount,
+      subtitle: Text('Rs ' + _entries[id].amount,
           style: Theme.of(context)
               .textTheme
               .subtitle1
@@ -160,17 +164,18 @@ class _HomePageState extends State<HomePage> {
                     itemCount: Entry.count,
                     shrinkWrap: true,
                     itemBuilder: (context, index) =>
-                        createTile(_entries[index])))),
+                        createTile(_entryIds[index])))),
         TextButton(
             child: Text('Add new entry'),
             onPressed: () async {
-              await Navigator.push(context,
+              final id = await Navigator.push(context,
                   MaterialPageRoute(builder: (context) => EntryForm()));
 
               this.setState(() {
                 _entries = Entry.entries;
-                cash[_entries[Entry.count - 1].type] +=
-                    int.parse(_entries[Entry.count - 1].amount);
+                _entryIds.add(id);
+                cash[_entries[_entryIds[Entry.count - 1]].type] +=
+                    int.parse(_entries[_entryIds[Entry.count - 1]].amount);
                 print(_entries);
               });
             },

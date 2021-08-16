@@ -4,12 +4,12 @@ class Entry {
   final String amount;
   final String title;
   final String type;
-  final int id;
+  String id;
   static int count = 0;
-  static List<Entry> entries = [];
+  static Map<String, Entry> entries = {};
 
-  static addEntry(entry) {
-    entries.add(entry);
+  static addEntry(String index, entry) {
+    entries[index] = entry;
     count++;
   }
 

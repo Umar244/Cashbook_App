@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'Widgets/Entry.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid_util.dart';
+
+var uuid = Uuid();
 
 class EntryForm extends StatefulWidget {
   _EntryForm createState() => _EntryForm();
@@ -112,9 +116,9 @@ class _EntryForm extends State<EntryForm> {
                           title: titleController.text,
                           amount: amountController.text,
                           type: entryType,
-                          id: Entry.count);
-                      Entry.addEntry(entry);
-                      Navigator.pop(context);
+                          id: uuid.v4());
+                      Entry.addEntry(entry.id, entry);
+                      Navigator.pop(context, entry.id);
                     },
                     child: Text('Submit',
                         style: Theme.of(context).textTheme.bodyText2),
