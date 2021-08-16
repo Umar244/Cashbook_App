@@ -1,28 +1,21 @@
 import 'package:flutter/material.dart';
 
-class Entry extends StatelessWidget {
-  final amount;
-  final title;
+class Entry {
+  final String amount;
+  final String title;
+  final String type;
+  String id;
+  static int count = 0;
+  static Map<String, Entry> entries = {};
 
-  Entry({required this.title, required this.amount});
-
-  Widget build(BuildContext context) {
-    return Container(
-        child: ListTile(
-      title: Text(title),
-      subtitle: Text('Rs $amount'),
-    ));
+  static addEntry(String index, entry) {
+    entries[index] = entry;
+    count++;
   }
-}
 
-class EntryList extends StatelessWidget {
-  final List<Widget> entryList;
-
-  EntryList({required this.entryList});
-
-  Widget build(BuildContext context) {
-    return ListView(
-      children: entryList,
-    );
-  }
+  Entry(
+      {@required this.title,
+      @required this.amount,
+      @required this.type,
+      @required this.id});
 }
